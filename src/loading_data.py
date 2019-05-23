@@ -1,22 +1,22 @@
 """
-	Training steps
+	Loading dataset
 """
 
 import os
-from sklearn.svm import SVC
 
 from const import TRAIN_DIR
 from pre_processing import process_image, extract_feature_vector
-from net.resnet import resnet50
 
 '''
 	Loading all train dataset feature  vectors and class labels
 '''
 
 
-def load_dataset(model):
+def load_train_dataset(model):
 	# Dataset features: [{feature_vec: ..., label: ...}, ...]
 	features = []
+
+	print("Pre-processing all the images in the train set...")
 
 	for class_directory in os.listdir(TRAIN_DIR):
 		if class_directory != '.DS_Store':
@@ -33,25 +33,9 @@ def load_dataset(model):
 					# Keeping the feature vectors and labels in list of dictionaries
 					features.append({'feature_vec': feature_vec, 'label': class_directory})
 
+	print("All images have been preprocessed and feature vectors are extracted!")
+
 	return features
-
-
-'''
-	Training
-'''
-
-
-def train():
-	model = resnet50(pretrained=True)
-
-	# Feature vectors and labels
-	features = load_dataset(model)
-	feature_vecs = [feature['feature_vec'] for feature in features]
-	labels = [feature['label'] for feature in features]
-
-
-train()
-
 
 
 
