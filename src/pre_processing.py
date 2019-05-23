@@ -9,9 +9,6 @@ import cv2
 from PIL import Image
 import numpy as np
 
-from const import TRAIN_DIR
-from net.resnet import resnet50
-
 '''
 	=================
 	| NORMALIZATION |
@@ -42,12 +39,14 @@ def load_image(root_dir, path):
 		- Rescaling 
 		- Normalization
 		
-	:param np image - the given image matrix
 	:return np result_image - the image after processing
 '''
 
 
-def process_image(image):
+def process_image(root_dir, path):
+	# Loading the image
+	image, image_arr = load_image(root_dir, path)
+
 	# -- PADDING --
 	result_image, result_image_arr = add_padding(image)
 
@@ -139,7 +138,7 @@ def normalize(image):
 '''
 
 
-def extract_feature_vector(image):
+def extract_feature_vector(image, model):
 	# Append an augmented dimension to indicate batch_size, which is one
 	result_image = np.reshape(image, [1, 224, 224, 3])
 
@@ -150,18 +149,9 @@ def extract_feature_vector(image):
 	result_image = torch.from_numpy(result_image)
 
 	# Extract features
-	feature_vector = resnet50(result_image)
+	feature_vector = model(result_image)
 
 	# convert the features of type torch.FloatTensor to a Numpy array
-	feature_vector = feature_vector.numpy()
+	feature_vector = feature_vector.detach().numpy()
 
 	return feature_vector
-
-
-# TEST
-img, img_arr = load_image(TRAIN_DIR, 'n01615121/n01615121_786.JPEG')
-img = process_image(img)
-
-cv2.imshow('asd', img)
-cv2.waitKey()
-cv2.destroyAllWindows()
