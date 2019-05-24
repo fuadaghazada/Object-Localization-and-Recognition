@@ -18,14 +18,13 @@ import numpy as np
 '''
 	Loads an image from the given path to the root directory
 	
-	:param str root_dir - root directory
 	:param str path - path for the train or test images in dataset
 '''
 
 
-def load_image(root_dir, path):
+def load_image(path):
 	# Loading the image
-	image = Image.open(os.path.join(root_dir, path)).convert('RGB')
+	image = Image.open(path).convert('RGB')
 
 	# Converting to the numpy as np
 	image_arr = np.asarray(image)
@@ -43,10 +42,7 @@ def load_image(root_dir, path):
 '''
 
 
-def process_image(root_dir, path):
-	# Loading the image
-	image, image_arr = load_image(root_dir, path)
-
+def process_image(image):
 	# -- PADDING --
 	result_image, result_image_arr = add_padding(image)
 

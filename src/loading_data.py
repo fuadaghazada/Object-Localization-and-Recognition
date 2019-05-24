@@ -5,10 +5,12 @@
 import os
 
 from const import TRAIN_DIR
-from pre_processing import process_image, extract_feature_vector
+from pre_processing import load_image, process_image, extract_feature_vector
 
 '''
 	Loading all train dataset feature  vectors and class labels
+	
+	:param model - ResNet model for extracting features
 '''
 
 
@@ -22,8 +24,11 @@ def load_train_dataset(model):
 		if class_directory != '.DS_Store':
 			for image_name in os.listdir(os.path.join(TRAIN_DIR, class_directory)):
 				if image_name != '.DS_Store':
+					# Loading the image
+					image, _ = load_image(os.path.join(TRAIN_DIR, class_directory, image_name))
+
 					# Pre-processing the image
-					image = process_image(TRAIN_DIR, os.path.join(class_directory, image_name))
+					image = process_image(image)
 
 					# Extracting the feature vectors
 					feature_vec = extract_feature_vector(image, model)

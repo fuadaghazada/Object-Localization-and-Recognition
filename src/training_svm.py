@@ -28,7 +28,7 @@ def train_SVM(train_feature_vectors, train_feature_labels, class_labals):
 		train_labels[train_labels == label] = 1
 
 		# Training step
-		svm = SVC(kernel='rbf', C=0.1, gamma=1 / 8)
+		svm = SVC(kernel='rbf', C=0.1, gamma=1 / 8, probability=True)
 		svm.fit(train_vectors, train_labels)
 
 		# Keeping the trained model for the object type 'label'
