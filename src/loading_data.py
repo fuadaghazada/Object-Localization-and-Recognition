@@ -24,14 +24,18 @@ def load_train_dataset(model):
 		if class_directory != '.DS_Store':
 			for image_name in os.listdir(os.path.join(TRAIN_DIR, class_directory)):
 				if image_name != '.DS_Store':
+
 					# Loading the image
 					image, _ = load_image(os.path.join(TRAIN_DIR, class_directory, image_name))
+					print("\nLoaded image: '{}'...".format(image_name))
 
 					# Pre-processing the image
 					image = process_image(image)
+					print("Pre-processed: '{}'...".format(image_name))
 
 					# Extracting the feature vectors
 					feature_vec = extract_feature_vector(image, model)
+					print("Extracting feature vectors: '{}'...".format(image_name))
 
 					# TODO: Normalize feature vector
 

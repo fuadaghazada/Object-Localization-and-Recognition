@@ -25,19 +25,30 @@ def test(edge_detection, model, classifiers):
 
 	for image_name in os.listdir(os.path.join(TEST_DIR, 'images')):
 		if image_name != '.DS_Store':
+			print("\nTesting: '{}'...".format(image_name))
+
 			image_path = os.path.join(TEST_DIR, 'images', image_name)
 
 			# Extracting the candidate windows
 			boxes = extract_candidate_windows(image_path, edge_detection)
+			print("Extracting candidate windows: '{}'...".format(image_name))
 
 			# Classifying and Localizing
 			test_features = classify_localize(image_path, boxes, model)
+			print("Classifying and Localizing: '{}'...".format(image_name))
 
 			# Predicting
 			predictions = predict_features(test_features, classifiers)
+			print("Predictions: '{}'...".format(image_name))
 
-			break
-			# TODO: Continue from here...
+			# Choosing the best prediction
+			best_prediction = np.unravel_index(np.argmax(predictions, axis=None), predictions.shape)[0]
+			all_predictions.append(best_prediction)
+
+			# TODO: remove 'break'
+			# break
+
+	all_predictions = np.asarray(all_predictions)
 
 	return all_predictions
 

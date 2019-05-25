@@ -2,8 +2,6 @@
 	Pre-processing steps
 """
 
-import os
-
 import torch
 import cv2
 from PIL import Image
