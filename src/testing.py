@@ -21,7 +21,8 @@ from pre_processing import process_image, extract_feature_vector
 
 def test(edge_detection, model, classifiers):
 
-	all_predictions = []
+	label_predictions = []
+	boundary_edges = []
 
 	for image_name in os.listdir(os.path.join(TEST_DIR, 'images')):
 		if image_name != '.DS_Store':
@@ -31,6 +32,7 @@ def test(edge_detection, model, classifiers):
 
 			# Extracting the candidate windows
 			boxes = extract_candidate_windows(image_path, edge_detection)
+			boundary_edges.append(boxes)
 			print("Extracting candidate windows: '{}'...".format(image_name))
 
 			# Classifying and Localizing
@@ -42,15 +44,14 @@ def test(edge_detection, model, classifiers):
 			print("Predictions: '{}'...".format(image_name))
 
 			# Choosing the best prediction
-			best_prediction = np.unravel_index(np.argmax(predictions, axis=None), predictions.shape)[0]
-			all_predictions.append(best_prediction)
+			best_prediction = np.unravel_index(np.argmax(predictions, axis=None), predictions.shape)
+			label_predictions.append(best_prediction)
 
-			# TODO: remove 'break'
-			# break
+	# Converting to numpy array
+	label_predictions = np.asarray(label_predictions)
+	boundary_edges = np.asarray(boundary_edges)
 
-	all_predictions = np.asarray(all_predictions)
-
-	return all_predictions
+	return label_predictions, boundary_edges
 
 
 '''

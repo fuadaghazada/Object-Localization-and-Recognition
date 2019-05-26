@@ -18,6 +18,9 @@ def calculate_metrics(predictions, actuals):
 		# False Negatives: FN
 		TP, TN, FP, FN = 0, 0, 0, 0
 
+		# for 0 divisions
+		TEMP = 0.00000001
+
 		for i in range(len(predictions)):
 
 			if predictions[i] == 1 and actuals[i] == 1:
@@ -33,17 +36,17 @@ def calculate_metrics(predictions, actuals):
 		accuracy = ((TP + TN) / len(predictions)) * 100
 
 		# Precision and Recall
-		precision = TP / (TP + FP)
-		recall = TP / (TP + FN)
+		precision = TP / (TP + FP + TEMP)
+		recall = TP / (TP + FN + TEMP)
 
 		# Other metrics...
-		NPV = TN / (TN + FN)  # Negative Predictive
-		FPR = FP / (FP + TN)  # False Positive Rate
-		FDR = FP / (TP + FP)  # False Discovery Rate
-		F1 = (2 * precision * recall) / (precision + recall)
-		F2 = (5 * precision * recall) / (4 * precision + recall)
+		NPV = TN / (TN + FN + TEMP)  # Negative Predictive
+		FPR = FP / (FP + TN + TEMP)  # False Positive Rate
+		FDR = FP / (TP + FP + TEMP)  # False Discovery Rate
+		F1 = (2 * precision * recall) / (precision + recall + TEMP)
+		F2 = (5 * precision * recall) / (4 * precision + recall + TEMP)
 
-		# Basic metrics: accuracy, TP, FP, FN, TN
+		# All metrics: accuracy, TP, FP, FN, TN, recall, precision, NPV, FPR, FDR, F1, F2
 		return {'accuracy': accuracy,
 				'TP': TP,
 				'FP': FP,
@@ -56,6 +59,54 @@ def calculate_metrics(predictions, actuals):
 				'FDR': FDR,
 				'F1': F1,
 				'F2': F2}
+
+
+'''	
+	Calculating the intersection area between candidate edge box window
+	and truth box
+	
+	:param candidate_window - candidate window from 'Edge box' method
+	:param truth_box - ground truth box (coming with test data)
+'''
+
+
+def calculate_intersection_area(candidate_window, truth_box):
+	# Box properties
+	c_x_upper, c_y_upper, c_x_lower, c_y_lower = candidate_window
+	t_x_upper, t_y_upper, t_x_lower, t_y_lower = truth_box
+
+	# Intersection dimensions: width, height
+	intersection_width = abs(max(c_x_upper, t_x_upper) - min(c_x_lower, t_x_lower))
+	intersection_height = abs(max(c_y_upper, t_y_upper) - min(c_y_lower, t_y_lower))
+
+	# Intersection area
+	intersection_area = intersection_width * intersection_height if (intersection_height > 0 and intersection_width > 0) else 0
+
+	return intersection_area
+
+
+'''	
+	Calculating the union area between candidate edge box window
+	and truth box
+	
+	:param candidate_window - candidate window from 'Edge box' method
+	:param truth_box - ground truth box (coming with test data)
+'''
+
+
+def calculate_union_area(candidate_window, truth_box):
+	# Box properties
+	c_x_upper, c_y_upper, c_x_lower, c_y_lower = candidate_window
+	t_x_upper, t_y_upper, t_x_lower, t_y_lower = truth_box
+
+	# Union variables: candidate_window area, truth_box are
+	candidate_window_area = (abs(c_x_upper - c_x_lower) * abs(c_y_upper - c_y_lower))
+	truth_box_area = (abs(t_x_upper - t_x_lower) * abs(t_y_upper - t_y_lower))
+
+	# Union area: a * b - intersect(a, b)
+	union_area = candidate_window_area * truth_box_area - calculate_intersection_area(candidate_window, truth_box)
+
+	return union_area
 
 
 '''
@@ -104,4 +155,3 @@ def print_metric(metric):
 	print("------------------------------")
 
 	return accuracy, TP, FP, FN, TN, recall, precision, NPV, FPR, FDR, F1, F2
-

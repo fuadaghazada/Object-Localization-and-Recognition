@@ -8,7 +8,7 @@ import sys
 import numpy as np
 
 from const import TEST_DIR
-from metrics import calculate_metrics
+from metrics import calculate_metrics, calculate_intersection_area, calculate_union_area
 
 
 '''
@@ -53,7 +53,6 @@ def read_test_data(class_labels):
 '''
 	Evaluate1: Classification accuracy
 		- Calculating confusion matrix: precision, recall
-		- Overall accuracy in terms of percentage
 	
 	:param test_predictions - results after predicting on test images
 	:param class_labels - unique class labels of the dataset  
@@ -90,9 +89,49 @@ def evaluate1(test_predictions, class_labels):
 
 '''
 	Evaluate2: Localization accuracy
+		- Localization accuracy: intersection / area
+		- Overall accuracy in terms of percentage
+		
+	:param test_predictions - result labels after predicting on test images
+	:param boundary_boxes - result boxes after predicting on test images
+	:param class_labels - unique class labels of the dataset  	
 '''
 
 
-def evaluate2():
-	# TODO: Implement...
-	pass
+def evaluate2(test_predictions, boundary_boxes, class_labels):
+
+	# For calculating overall accuracy
+	num_corrects = 0
+	total = len(test_predictions)
+
+	# Localization accuracies for test images
+	localization_accuracies = []
+
+	# Ground truth labels and boxes
+	test_data = read_test_data(class_labels)
+	test_actual_labels = test_data['labels']
+	test_actual_boxes = test_data['boxes']
+
+	for i, test_prediction in enumerate(test_predictions):
+		prediction_label = test_prediction[0]
+		prediction_box_index = test_prediction[1]
+
+		# Counting overall correct predictions
+		if prediction_label == test_actual_labels[i]:
+			num_corrects += 1
+
+		# Predicted candidate window
+		candidate_window = boundary_boxes[i, prediction_box_index]
+		c_x, c_y, c_w, c_h =  candidate_window
+
+		# Localization accuracy: intersection / union
+		intersect_area = calculate_intersection_area([c_x, c_y, c_x + c_w, c_y + c_h], test_actual_boxes[i])
+		union_area = calculate_union_area([c_x, c_y, c_x + c_w, c_y + c_h], test_actual_boxes[i])
+
+		localization_accuracies.append(float(intersect_area / union_area))
+
+	localization_accuracies = np.array(localization_accuracies)
+
+	return {'overall_accuracy': float(num_corrects / total),
+			'localization_accuracies': localization_accuracies}
+
