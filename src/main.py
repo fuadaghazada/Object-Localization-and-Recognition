@@ -1,4 +1,5 @@
 import pickle
+from pprint import pprint
 
 import numpy as np
 import cv2
@@ -54,6 +55,8 @@ test_predictions, box_boundaries = test(edge_detection, model, svm_models)
 
 # Evaluation 1
 evaluation1_results = evaluate1(test_predictions, class_labels)
+pprint(evaluation1_results)
 
 # Evaluation 2
 evaluation2_results = evaluate2(test_predictions, box_boundaries, class_labels)
+pprint(evaluation2_results)
