@@ -74,11 +74,11 @@ idx = 0			# 0th image (for example)
 
 '''
 	Drawing the overlayed image with box boundaries
-
-	:param idx - index of the image in test image dataset
-	:param draw_all_boxes - flag for determining the boxes for overlayed image:
-								- True: all 50 (max) boxes are drawn
-								- False: only the 'best' predicted box is drawn
+    
+    :param idx - index of the image in test image dataset
+    :param draw_all_boxes - flag for determining the boxes for overlayed image:
+                                - True: all 50 (max) boxes are drawn
+                                - False: only the 'best' predicted box is drawn
 '''
 
 
@@ -87,18 +87,32 @@ def overlayed_image(idx, draw_all_boxes=False):
 	image = cv2.imread(os.path.join(TEST_DIR, 'images', '{}.JPEG'.format(idx)))
 
 	# Prediction data: label, boxes
-	predicted_label, box_index = test_predictions[idx]
+    predicted_label, box_index = test_predictions[idx]
 
-	if draw_all_boxes is True:
-		for box in box_boundaries[idx]:
-			box_x1, box_y1, box_x2, box_y2 = box
-			cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (255, 0, 0), 1)
-	else:
-		# Draw only the 'best' predicted box
-		box_x1, box_y1, box_x2, box_y2 = box_boundaries[idx][box_index]
-		cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (255, 0, 0), 1)
+    # Ground truth data
+    ground_truth_data = read_test_data(class_labels)
+    ground_truth_labels = ground_truth_data['labels']
+    ground_truth_boxes = ground_truth_data['boxes']
 
-	return image
+    # Drawing ground true box
+    true_label = ground_truth_labels[idx]
+    box_x1, box_y1, box_x2, box_y2 = ground_truth_boxes[idx]
+    cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (0, 255, 0), 2)
+
+    print("Predicted label:", class_names[predicted_label])
+    print("Ground truth label:", class_names[true_label])
+    print("Localization accuracy:", evaluation2_results['localization_accuracies'][idx])
+
+    if draw_all_boxes is True:
+        for box in box_boundaries[idx]:
+            box_x1, box_y1, box_x2, box_y2 = box
+            cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (255, 0, 0), 2)
+    else:
+        # Draw only the 'best' predicted box
+        box_x1, box_y1, box_x2, box_y2 = box_boundaries[idx][box_index]
+        cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (255, 0, 0), 2)
+
+    return image
 
 
 # Displaying
