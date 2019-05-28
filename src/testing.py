@@ -24,7 +24,7 @@ def test(edge_detection, model, classifiers):
 	label_predictions = []
 	boundary_edges = []
 
-	for i in range(100):
+	for i in range(5):
 		# Name of the image file
 		image_name = "{}.JPEG".format(i)
 

@@ -72,13 +72,13 @@ def evaluate1(test_predictions, class_labels):
 		predictions = test_predictions[:, 0].copy()
 		predictions[predictions == i] = 1
 		predictions[predictions != i] = 0
-		predictions[predictions == -1] = -1
+		# predictions[predictions == -1] = 0
 
 		# Ground truth
 		ground_truth = test_actual_labels.copy()
 		ground_truth[ground_truth == i] = 1
 		ground_truth[ground_truth != i] = 0
-		ground_truth[ground_truth == -1] = -1
+		# ground_truth[ground_truth == -1] = 0
 
 		# Calculating confusion matrix metrics
 		metrics = calculate_metrics(predictions=predictions, actuals=ground_truth)
