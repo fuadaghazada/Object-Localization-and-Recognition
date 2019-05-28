@@ -75,7 +75,7 @@ def evaluate1(test_predictions, class_labels):
 		predictions[predictions == -1] = 0
 
 		# Ground truth
-		ground_truth = test_actual_labels.copy()[:5]
+		ground_truth = test_actual_labels.copy()
 		ground_truth[ground_truth != i] = -1
 		ground_truth[ground_truth == i] = 1
 		ground_truth[ground_truth == -1] = 0
