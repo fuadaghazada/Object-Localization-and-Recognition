@@ -75,7 +75,7 @@ def evaluate1(test_predictions, class_labels):
 		predictions[predictions == -1] = 0
 
 		# Ground truth
-		ground_truth = test_actual_labels.copy()
+		ground_truth = test_actual_labels.copy()[:10]
 		ground_truth[ground_truth != i] = -1
 		ground_truth[ground_truth == i] = 1
 		ground_truth[ground_truth == -1] = 0
@@ -116,19 +116,21 @@ def evaluate2(test_predictions, boundary_boxes, class_labels):
 		prediction_label = test_prediction[0]
 		prediction_box_index = test_prediction[1]
 
-		# Counting overall correct predictions
-		if prediction_label == test_actual_labels[i]:
-			num_corrects += 1
-
 		# Predicted candidate window
 		candidate_window = boundary_boxes[i, prediction_box_index]
-		c_x, c_y, c_w, c_h =  candidate_window
+		c_x, c_y, c_w, c_h = candidate_window
 
 		# Localization accuracy: intersection / union
 		intersect_area = calculate_intersection_area([c_x, c_y, c_x + c_w, c_y + c_h], test_actual_boxes[i])
 		union_area = calculate_union_area([c_x, c_y, c_x + c_w, c_y + c_h], test_actual_boxes[i])
 
-		localization_accuracies.append(float(intersect_area / union_area))
+		# localization accuracy (in percentage notation, out of 100)
+		percentage = float(intersect_area / union_area) * 100
+		localization_accuracies.append(percentage)
+
+		# Counting overall correct predictions
+		if prediction_label == test_actual_labels[i] and percentage >= 50:
+			num_corrects += 1
 
 	localization_accuracies = np.array(localization_accuracies)
 

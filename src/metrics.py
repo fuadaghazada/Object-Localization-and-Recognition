@@ -53,7 +53,7 @@ def calculate_metrics(predictions, actuals):
 				'FN': FN,
 				'TN': TN,
 				'recall': recall,
-				'preicision:': precision,
+				'precision:': precision,
 				'NPV': NPV,
 				'FPR': FPR,
 				'FDR': FDR,
@@ -75,9 +75,20 @@ def calculate_intersection_area(candidate_window, truth_box):
 	c_x_upper, c_y_upper, c_x_lower, c_y_lower = candidate_window
 	t_x_upper, t_y_upper, t_x_lower, t_y_lower = truth_box
 
-	# Intersection dimensions: width, height
-	intersection_width = abs(max(c_x_upper, t_x_upper) - min(c_x_lower, t_x_lower))
-	intersection_height = abs(max(c_y_upper, t_y_upper) - min(c_y_lower, t_y_lower))
+	left = max(c_x_upper, t_x_upper)
+	right = min(c_x_lower, t_x_lower)
+	bottom = min(c_y_lower, t_y_lower)
+	top = max(c_y_upper, t_y_upper)
+
+	# if two rectangles overlap
+	if left < right and top < bottom:
+
+		# Intersection dimensions: width, height
+		intersection_width = right - left
+		intersection_height = bottom - top
+
+	else:
+		return 0
 
 	# Intersection area
 	intersection_area = intersection_width * intersection_height if (intersection_height > 0 and intersection_width > 0) else 0
@@ -103,8 +114,9 @@ def calculate_union_area(candidate_window, truth_box):
 	candidate_window_area = (abs(c_x_upper - c_x_lower) * abs(c_y_upper - c_y_lower))
 	truth_box_area = (abs(t_x_upper - t_x_lower) * abs(t_y_upper - t_y_lower))
 
-	# Union area: a * b - intersect(a, b)
-	union_area = candidate_window_area * truth_box_area - calculate_intersection_area(candidate_window, truth_box)
+	# Union area: a + b - intersect(a, b)
+	intersection = calculate_intersection_area(candidate_window, truth_box)
+	union_area = candidate_window_area + truth_box_area - intersection
 
 	return union_area
 
