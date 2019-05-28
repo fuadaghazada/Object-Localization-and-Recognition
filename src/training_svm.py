@@ -11,24 +11,26 @@ from sklearn.svm import SVC
 	:param train_feature_vectors - feature vectors of train images
 	:param train_feature_labels - feature labels of train images
 	:param class_labels - unique class labels in train dataset
+	:param C - hyper-parameter: regularization factor - how hard or soft the margin is
+	:param gamma - hyper-parameter
 '''
 
 
-def train_SVM(train_feature_vectors, train_feature_labels, class_labals):
+def train_SVM(train_feature_vectors, train_feature_labels, class_labels, c=0.1, gamma=1/8):
 	# SVM model list
 	svm_s = []
 
 	# Train vectors in numpy array [# of training, 2048]
 	train_vectors = np.asarray(train_feature_vectors).reshape(-1, 2048)
 
-	for label in class_labals:
+	for label in class_labels:
 		# Choosing object type 'label' setting the labels to 1: for the other object type to 0
 		train_labels = np.asarray(train_feature_labels)
 		train_labels[train_labels != label] = 0
 		train_labels[train_labels == label] = 1
 
 		# Training step
-		svm = SVC(kernel='rbf', C=0.1, gamma=1 / 8, probability=True)
+		svm = SVC(kernel='rbf', C=c, gamma=gamma, probability=True)
 		svm.fit(train_vectors, train_labels)
 
 		# Keeping the trained model for the object type 'label'

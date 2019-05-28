@@ -24,7 +24,10 @@ def test(edge_detection, model, classifiers):
 	label_predictions = []
 	boundary_edges = []
 
-	for image_name in os.listdir(os.path.join(TEST_DIR, 'images')):
+	for i in range(100):
+		# Name of the image file
+		image_name = "{}.JPEG".format(i)
+
 		if image_name != '.DS_Store':
 			print("\nTesting: '{}'...".format(image_name))
 
@@ -139,7 +142,7 @@ def predict_features(test_features, classifiers):
 
 	for classifier in classifiers:
 		prediction = classifier.predict_proba(test_features)
-		predictions.append(prediction)
+		predictions.append(prediction[:, 1])
 
 	predictions = np.asarray(predictions)
 

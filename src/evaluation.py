@@ -82,7 +82,7 @@ def evaluate1(test_predictions, class_labels):
 
 		# Calculating confusion matrix metrics
 		metrics = calculate_metrics(predictions=predictions, actuals=ground_truth)
-		evaluation_results.append({'label': 1, 'metrics': metrics})
+		evaluation_results.append({'label': i, 'metrics': metrics})
 
 	return evaluation_results
 
