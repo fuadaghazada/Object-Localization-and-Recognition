@@ -4,12 +4,16 @@
 
 import os
 import sys
+import csv
 
 import numpy as np
 
 from const import TEST_DIR
 from metrics import calculate_metrics, calculate_intersection_area, calculate_union_area
 
+# Actual names
+class_names = np.asarray(['eagle', 'dog', 'cat', 'tiger', 'star',
+						  'zebra', 'bison', 'antelope', 'chimpanzee', 'elephant'])
 
 '''
 	Reading the test labels
@@ -100,8 +104,12 @@ def evaluate1(test_predictions, class_labels):
 
 def evaluate2(test_predictions, boundary_boxes, class_labels):
 
+	# Writing the results to csv file
+	writer = csv.writer(open('../results.csv', 'w'))
+	writer.writerow(['Test data', 'Actual label', 'Predicted label', 'Location accuracy'])
+
 	# For calculating overall accuracy
-	num_corrects = 0
+	num_correct_classes, num_correct_locs = 0, 0
 	total = len(test_predictions)
 
 	# Localization accuracies for test images
@@ -129,11 +137,18 @@ def evaluate2(test_predictions, boundary_boxes, class_labels):
 		localization_accuracies.append(percentage)
 
 		# Counting overall correct predictions
-		if prediction_label == test_actual_labels[i] and percentage >= 50:
-			num_corrects += 1
+		if prediction_label == test_actual_labels[i]:
+			num_correct_classes += 1
+
+		if  percentage >= 50:
+			num_correct_locs += 1
+
+		# Writing row
+		writer.writerow(['{}'.format(i + 1), class_names[test_actual_labels[i]], class_names[prediction_label], str(round(percentage, 2))])
 
 	localization_accuracies = np.array(localization_accuracies)
 
-	return {'overall_accuracy': float(num_corrects / total),
+	return {'overall_classification_accuracy': float(num_correct_classes / total),
+			'overall_localization_accuracy': float(num_correct_locs / total),
 			'localization_accuracies': localization_accuracies}
 
