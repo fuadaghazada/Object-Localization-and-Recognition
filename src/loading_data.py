@@ -5,7 +5,7 @@
 import os
 
 from const import TRAIN_DIR
-from pre_processing import load_image, process_image, extract_feature_vector
+from pre_processing import load_image, process_image, extract_feature_vector, apply_l2_normalization
 
 '''
 	Loading all train dataset feature  vectors and class labels
@@ -14,7 +14,7 @@ from pre_processing import load_image, process_image, extract_feature_vector
 '''
 
 
-def load_train_dataset(model):
+def load_train_dataset(model, l2_normalization):
 	# Dataset features: [{feature_vec: ..., label: ...}, ...]
 	features = []
 
@@ -37,7 +37,12 @@ def load_train_dataset(model):
 					feature_vec = extract_feature_vector(image, model)
 					print("Extracting feature vectors: '{}'...".format(image_name))
 
-					# TODO: Normalize feature vector
+					# Apply l2 normalization on the feature vector
+					# (this is optional, specified by the parameter "l2_normalization")
+					if l2_normalization:
+
+						feature_vec = apply_l2_normalization(feature_vec)
+						print("Applying L2-normalization: '{}'...".format(image_name))
 
 					# Keeping the feature vectors and labels in list of dictionaries
 					features.append({'feature_vec': feature_vec, 'label': class_directory})

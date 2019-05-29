@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 
 from const import TEST_DIR
-from pre_processing import process_image, extract_feature_vector
+from pre_processing import process_image, extract_feature_vector, apply_l2_normalization
 
 '''
 	Testing
@@ -19,7 +19,7 @@ from pre_processing import process_image, extract_feature_vector
 '''
 
 
-def test(edge_detection, model, classifiers):
+def test(edge_detection, model, classifiers, l2_normalization):
 
 	label_predictions = []
 	boundary_edges = []
@@ -39,7 +39,7 @@ def test(edge_detection, model, classifiers):
 			print("Extracting candidate windows: '{}'...".format(image_name))
 
 			# Classifying and Localizing
-			test_features = classify_localize(image_path, boxes, model)
+			test_features = classify_localize(image_path, boxes, model, l2_normalization)
 			print("Classifying and Localizing: '{}'...".format(image_name))
 
 			# Predicting
@@ -95,7 +95,7 @@ def extract_candidate_windows(image_path, edge_detection):
 '''
 
 
-def classify_localize(image_path, boxes, model):
+def classify_localize(image_path, boxes, model, l2_normalization):
 
 	test_features = []
 
@@ -114,12 +114,15 @@ def classify_localize(image_path, boxes, model):
 		# Extracting feature vectors
 		test_feature_vec = extract_feature_vector(cropped, model)
 
+		# Apply l2 normalization on the feature vector
+		# (optional, specified by the parameter "l2_normalization")
+		if l2_normalization:
+			test_feature_vec = apply_l2_normalization(test_feature_vec)
+
 		# Keeping the extracted features in the test features list
 		test_features.append(test_feature_vec)
 
 	test_features = np.asarray(test_features)
-
-	# TODO: Normalize feature vector
 
 	return np.asarray(test_features)
 

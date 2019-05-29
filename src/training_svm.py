@@ -16,7 +16,7 @@ from sklearn.svm import SVC
 '''
 
 
-def train_SVM(train_feature_vectors, train_feature_labels, class_labels, c=0.1, gamma=1/8):
+def train_SVM(train_feature_vectors, train_feature_labels, class_labels, c=0.1, gamma=1):
 	# SVM model list
 	svm_s = []
 

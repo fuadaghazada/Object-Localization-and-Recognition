@@ -15,7 +15,10 @@ from training_svm import train_SVM
 from const import TEST_DIR
 
 # Don't train: load the saved models
-TRAIN_FLAG = False
+TRAIN_FLAG = True
+
+# Specify whether to apply L2-normalization on feature vectors
+NORMALIZATION_FLAG = False
 
 # Class label (unique)
 class_labels = np.asarray(['n01615121', 'n02099601', 'n02123159', 'n02129604', 'n02317335',
@@ -30,7 +33,7 @@ model = resnet50(pretrained=True)
 
 if TRAIN_FLAG is True:
 	# Loading the train set (feature vectors and feature label)
-	train_features = load_train_dataset(model)
+	train_features = load_train_dataset(model, NORMALIZATION_FLAG)
 
 	# Feature vectors and label for Train set
 	train_feature_vectors = [feature['feature_vec'] for feature in train_features]
@@ -57,7 +60,7 @@ for i in range(10):
 	svm_models.append(svm_model)
 
 # Testing results
-test_predictions, box_boundaries = test(edge_detection, model, svm_models)
+test_predictions, box_boundaries = test(edge_detection, model, svm_models, NORMALIZATION_FLAG)
 
 # -- EVALUATION --
 

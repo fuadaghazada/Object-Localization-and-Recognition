@@ -120,6 +120,32 @@ def normalize(image):
 
 
 '''
+	Applying l2 normalization (dividing all features by the norm of the vector)
+
+	:param np feature_vec - feature vector
+'''
+
+
+def apply_l2_normalization(feature_vec):
+
+	# The formula is given below, x being the feature vector:
+	# x / (||x|| + 0.0001)
+
+	# Find the norm ||x||
+	squared = np.square(feature_vec)			# take the square of every item
+	sum_of_elements = np.sum(squared)			# sum all the (squared) elements
+	norm = np.sqrt(sum_of_elements)				# take the square root of the sum
+
+	# add a small factor of 0.0001 to the norm
+	norm = norm + 0.0001
+
+	# divide all the elements of the feature vector by "norm"
+	normalized_vec = np.true_divide(feature_vec, norm)
+
+	return normalized_vec
+
+
+'''
 	======================
 	| FEATURE EXTRACTION |
 	======================
