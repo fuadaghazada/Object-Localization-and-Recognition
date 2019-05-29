@@ -71,20 +71,18 @@ pprint(evaluation2_results)
 
 # -- TESTING ON SAMPLE IMAGES --
 
-idx = 0			# 0th image (for example)
-
-
 '''
-    Drawing the overlayed image with box boundaries
-
-    :param idx - index of the image in test image dataset
-    :param draw_all_boxes - flag for determining the boxes for overlayed image:
-                                - True: all 50 (max) boxes are drawn
-                                - False: only the 'best' predicted box is drawn
+	Drawing the overlayed image with box boundaries
+	
+	:param idx - index of the image in test image dataset
+	:param draw_all_boxes - flag for determining the boxes for overlayed image:
+								- True: all 50 (max) boxes are drawn
+								- False: only the 'best' predicted box is drawn
+	:param draw_labels - flag for determining putting the labels near the boxes
 '''
 
 
-def overlayed_image(idx, draw_all_boxes=False):
+def overlayed_image(idx, draw_all_boxes=False, draw_labels=False):
 	# Reading image in index 'idx'
 	image = cv2.imread(os.path.join(TEST_DIR, 'images', '{}.JPEG'.format(idx)))
 
@@ -105,16 +103,29 @@ def overlayed_image(idx, draw_all_boxes=False):
 	print("Ground truth label:", class_names[true_label])
 	print("Localization accuracy:", evaluation2_results['localization_accuracies'][idx])
 
+	# Ground Truth label text
+	if draw_labels is True:
+		cv2.putText(image, class_names[true_label], (box_x1, box_y2 + 30), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (0, 255, 0))
+
+	# Drawing
 	if draw_all_boxes is True:
 		for box in box_boundaries[idx]:
-			box_x1, box_y1, box_x2, box_y2 = box
+			box_x1, box_y1, width, height = box
+			box_x2, box_y2 = box_x1 + width, box_y1 + height
 			cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (255, 0, 0), 2)
 	else:
 		# Draw only the 'best' predicted box
-		box_x1, box_y1, box_x2, box_y2 = box_boundaries[idx][box_index]
+		box_x1, box_y1, width, height = box_boundaries[idx][box_index]
+		box_x2, box_y2 = box_x1 + width, box_y1 + height
 		cv2.rectangle(image, (box_x1, box_y1), (box_x2, box_y2), (255, 0, 0), 2)
+
+	# Prediction label text
+	if draw_labels is True:
+		cv2.putText(image, class_names[true_label], (box_x1, box_y1 - 30), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (255, 0, 0))
 
 	return image
 
+
 # Displaying
 plt.imshow(overlayed_image(59))
+plt.show()
